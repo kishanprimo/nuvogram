@@ -18,8 +18,8 @@ const FEATURES = [
   { label: "Home", href: "#home" },
   { label: "Features", href: "#features" },
   { label: "Earn Money", href: "#earn-money" },
+  { label: "Explore", href: "#explore" },
   { label: "Contact Us", href: "#contact" },
-  { label: "Social media", href: "#social" },
 ];
 
 const SUPPORT = [

@@ -8,7 +8,6 @@ import {
   useState,
 } from "react";
 
-/** Same five links, same anchors as nuvogram.com */
 const LINKS = [
   { id: "features", label: "Features" },
   { id: "earn-money", label: "Earn Money" },
@@ -18,22 +17,40 @@ const LINKS = [
 ] as const;
 
 type LinkId = (typeof LINKS)[number]["id"];
+type NavbarProps = { logoSrc?: string };
 
-type NavbarProps = {
-  logoSrc?: string;
-};
+/* ---------- Timings ---------- */
+const DUR = 420;
+const OPEN_BLUE_DELAY = 0;
+const OPEN_WHITE_DELAY = 120;
+const CLOSE_WHITE_DELAY = 0;
+const CLOSE_BLUE_DELAY = 120;
 
 export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
   const [ready, setReady] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [open, setOpen] = useState(false);
+
+  /** Panel mount state. false = not in DOM. */
+  const [mounted, setMounted] = useState(false);
+  /**
+   * Visual open state. When true, panels slide to translate-x-0.
+   * Starts false every time we mount so the first painted frame is off-screen.
+   */
+  const [shown, setShown] = useState(false);
+
   const [active, setActive] = useState<LinkId | null>(null);
   const [hovered, setHovered] = useState<LinkId | null>(null);
   const [pill, setPill] = useState({ x: 0, w: 0, show: false });
 
   const listRef = useRef<HTMLUListElement>(null);
   const itemRefs = useRef<Partial<Record<LinkId, HTMLAnchorElement | null>>>({});
+  const timers = useRef<number[]>([]);
+
+  const clearTimers = () => {
+    timers.current.forEach((t) => window.clearTimeout(t));
+    timers.current = [];
+  };
 
   /* One-time entrance */
   useEffect(() => {
@@ -92,20 +109,60 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
     return () => window.removeEventListener("resize", measure);
   }, [measure]);
 
-  /* Mobile: lock scroll, close on Escape */
+  /* ---------- Open ---------- */
+  const openMenu = useCallback(() => {
+    if (mounted) return;
+    clearTimers();
+
+    // 1. Mount with panels still off-screen. `shown` starts false.
+    setShown(false);
+    setMounted(true);
+
+    // 2. Two rAFs: give the browser two paint opportunities to render the
+    //    off-screen start state, then flip `shown = true` to trigger transitions.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setShown(true);
+      });
+    });
+  }, [mounted]);
+
+  /* ---------- Close ---------- */
+  const closeMenu = useCallback(() => {
+    if (!mounted) return;
+    clearTimers();
+
+    // 1. Flip `shown` to false → panels begin their slide-out transitions.
+    setShown(false);
+
+    // 2. Unmount after the SLOWER of the two leave-timings has finished.
+    const total = CLOSE_BLUE_DELAY + DUR + 60;
+    const id = window.setTimeout(() => setMounted(false), total);
+    timers.current.push(id);
+  }, [mounted]);
+
+  const toggle = useCallback(() => {
+    if (mounted) closeMenu();
+    else openMenu();
+  }, [mounted, openMenu, closeMenu]);
+
+  /* Lock scroll + Escape while mounted */
   useEffect(() => {
-    if (!open) return;
+    if (!mounted) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeMenu();
     window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = prev;
       window.removeEventListener("keydown", onKey);
     };
-  }, [open]);
+  }, [mounted, closeMenu]);
 
-  const compact = scrolled || open;
+  /* Clean up timers on unmount */
+  useEffect(() => () => clearTimers(), []);
+
+  const compact = scrolled || mounted;
   const onDark = !compact;
 
   return (
@@ -126,7 +183,6 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
             compact ? "h-[4.25rem]" : "h-24",
           ].join(" ")}
         >
-          {/* Logo */}
           <a href="#" aria-label="Nuvogram home" className="shrink-0 rounded-md">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -139,7 +195,6 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
             />
           </a>
 
-          {/* Desktop links */}
           <ul
             ref={listRef}
             onMouseLeave={() => setHovered(null)}
@@ -192,13 +247,12 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
             })}
           </ul>
 
-          {/* Mobile toggle */}
           <button
             type="button"
-            onClick={() => setOpen((v) => !v)}
-            aria-expanded={open}
+            onClick={toggle}
+            aria-expanded={mounted}
             aria-controls="mobile-menu"
-            aria-label={open ? "Close menu" : "Open menu"}
+            aria-label={mounted ? "Close menu" : "Open menu"}
             className={`${
               onDark
                 ? "border-white/40 text-on-hero hover:bg-white/10"
@@ -208,24 +262,23 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
             <span className="relative block h-3.5 w-5" aria-hidden="true">
               <span
                 className={`absolute left-0 h-0.5 w-5 rounded bg-current transition-all duration-300 motion-reduce:transition-none ${
-                  open ? "top-[6px] rotate-45" : "top-0"
+                  mounted ? "top-[6px] rotate-45" : "top-0"
                 }`}
               />
               <span
                 className={`absolute top-[6px] left-0 h-0.5 w-5 rounded bg-current transition-all duration-200 ${
-                  open ? "scale-x-0 opacity-0" : "scale-x-100 opacity-100"
+                  mounted ? "scale-x-0 opacity-0" : "scale-x-100 opacity-100"
                 }`}
               />
               <span
                 className={`absolute left-0 h-0.5 w-5 rounded bg-current transition-all duration-300 motion-reduce:transition-none ${
-                  open ? "top-[6px] -rotate-45" : "top-3"
+                  mounted ? "top-[6px] -rotate-45" : "top-3"
                 }`}
               />
             </span>
           </button>
         </nav>
 
-        {/* Reading progress */}
         <div
           aria-hidden="true"
           className="bg-brand-gradient absolute bottom-[-1px] left-0 h-[2px] w-full origin-left"
@@ -233,144 +286,156 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
         />
       </header>
 
-      {/* ---------- Mobile drawer (LEFT slide + double overlay) ---------- */}
-      <div
-        className={[
-          "fixed inset-0 z-40 lg:hidden",
-          open ? "visible" : "pointer-events-none invisible",
-        ].join(" ")}
-        aria-hidden={!open}
-      >
-        {/* Layer 1 — blue-tinted dark overlay */}
-        <button
-          type="button"
-          tabIndex={-1}
-          aria-hidden="true"
-          onClick={() => setOpen(false)}
-          className={[
-            "absolute inset-0 cursor-default transition-opacity duration-300 ease-out motion-reduce:transition-none",
-            open ? "opacity-100" : "opacity-0",
-          ].join(" ")}
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(6,15,34,0.78) 0%, rgba(15,40,90,0.72) 50%, rgba(6,15,34,0.82) 100%)",
-            backdropFilter: "blur(6px)",
-            WebkitBackdropFilter: "blur(6px)",
-          }}
-        />
-
-        {/* Layer 2 — theme-colored drawer panel */}
-        <aside
-          id="mobile-menu"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Mobile navigation"
-          className={[
-            "border-border bg-background absolute inset-y-0 left-0 w-[82%] max-w-sm border-r shadow-2xl",
-            "transition-transform motion-reduce:transition-none",
-            open ? "translate-x-0" : "-translate-x-full",
-          ].join(" ")}
-          style={{
-            transitionDuration: "420ms",
-            transitionTimingFunction: "cubic-bezier(0.2,0.8,0.2,1)",
-          }}
-        >
-          {/* Top bar: logo + close */}
-          <div className="border-border flex h-[4.25rem] items-center justify-between border-b px-5">
-            <a
-              href="#"
-              onClick={() => setOpen(false)}
-              aria-label="Nuvogram home"
-              className="shrink-0 rounded-md"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={logoSrc} alt="Nuvogram" className="h-11 w-auto" />
-            </a>
-
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              aria-label="Close menu"
-              className="border-border text-foreground hover:bg-surface grid size-10 place-items-center rounded-full border transition-colors"
-            >
-              <span className="relative block size-4">
-                <span className="absolute top-1/2 left-0 h-0.5 w-4 -translate-y-1/2 rotate-45 rounded bg-current" />
-                <span className="absolute top-1/2 left-0 h-0.5 w-4 -translate-y-1/2 -rotate-45 rounded bg-current" />
-              </span>
-            </button>
-          </div>
-
-          {/* Brand accent line under header */}
-          <div
-            className="bg-brand-gradient h-[2px] w-full origin-left transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none"
-            style={{
-              transform: `scaleX(${open ? 1 : 0})`,
-              transitionDelay: open ? "150ms" : "0ms",
-            }}
+      {/* ---------- Mobile drawer ---------- */}
+      {mounted && (
+        <div className="fixed inset-0 z-40 lg:hidden" aria-hidden={!shown}>
+          {/* Click-away */}
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-hidden="true"
+            onClick={closeMenu}
+            className="absolute inset-0 cursor-default bg-transparent"
           />
 
-          {/* Links */}
-          <nav aria-label="Mobile primary" className="px-2 py-3">
-            <ul className="divide-border divide-y">
-              {LINKS.map(({ id, label }, i) => {
-                const isActive = active === id;
-                return (
-                  <li
-                    key={id}
-                    className={[
-                      "transition-[opacity,translate] ease-out motion-reduce:transition-none",
-                      open ? "translate-x-0 opacity-100" : "-translate-x-3 opacity-0",
-                    ].join(" ")}
-                    style={{
-                      transitionDuration: "400ms",
-                      transitionDelay: open ? `${140 + i * 60}ms` : "0ms",
-                    }}
-                  >
-                    <a
-                      href={`#${id}`}
-                      onClick={() => setOpen(false)}
-                      aria-current={isActive ? "location" : undefined}
+          {/* Layer 1: BLUISH shade — leads on open, trails on close */}
+          <div
+            aria-hidden="true"
+            className={[
+              "pointer-events-none absolute inset-y-0 left-0 w-[88%] max-w-[26rem]",
+              "transition-transform motion-reduce:transition-none",
+              shown ? "translate-x-0" : "-translate-x-full",
+            ].join(" ")}
+            style={{
+              transitionDuration: `${DUR}ms`,
+              transitionDelay: `${shown ? OPEN_BLUE_DELAY : CLOSE_BLUE_DELAY}ms`,
+              transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)",
+              background:
+                "linear-gradient(135deg, rgba(6,15,34,0.95) 0%, rgba(15,40,90,0.92) 45%, rgba(6,15,34,0.95) 100%)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+            }}
+          >
+            <div
+              className="absolute -top-24 -left-24 size-64 rounded-full opacity-40 blur-3xl"
+              style={{ background: "rgb(var(--brand-500-rgb) / 0.6)" }}
+            />
+          </div>
+
+          {/* Layer 2: THEME (white) — trails on open, leads on close */}
+          <aside
+            id="mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation"
+            className={[
+              "border-border bg-background absolute inset-y-0 left-0 w-[78%] max-w-[22rem] border-r shadow-2xl",
+              "transition-transform motion-reduce:transition-none",
+              shown ? "translate-x-0" : "-translate-x-full",
+            ].join(" ")}
+            style={{
+              transitionDuration: `${DUR}ms`,
+              transitionDelay: `${
+                shown ? OPEN_WHITE_DELAY : CLOSE_WHITE_DELAY
+              }ms`,
+              transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)",
+            }}
+          >
+            <div className="border-border flex h-[4.25rem] items-center justify-between border-b px-5">
+              <a
+                href="#"
+                onClick={closeMenu}
+                aria-label="Nuvogram home"
+                className="shrink-0 rounded-md"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={logoSrc} alt="Nuvogram" className="h-11 w-auto" />
+              </a>
+
+              <button
+                type="button"
+                onClick={closeMenu}
+                aria-label="Close menu"
+                className="border-border text-foreground hover:bg-surface grid size-10 place-items-center rounded-full border transition-colors"
+              >
+                <span className="relative block size-4">
+                  <span className="absolute top-1/2 left-0 h-0.5 w-4 -translate-y-1/2 rotate-45 rounded bg-current" />
+                  <span className="absolute top-1/2 left-0 h-0.5 w-4 -translate-y-1/2 -rotate-45 rounded bg-current" />
+                </span>
+              </button>
+            </div>
+
+            <div
+              className="bg-brand-gradient h-[2px] w-full origin-left transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none"
+              style={{
+                transform: `scaleX(${shown ? 1 : 0})`,
+                transitionDelay: shown ? "300ms" : "0ms",
+              }}
+            />
+
+            <nav aria-label="Mobile primary" className="px-2 py-3">
+              <ul className="divide-border divide-y">
+                {LINKS.map(({ id, label }, i) => {
+                  const isActive = active === id;
+                  return (
+                    <li
+                      key={id}
                       className={[
-                        "group flex items-center justify-between px-4 py-4 text-base font-medium transition-colors",
-                        isActive
-                          ? "text-brand-text"
-                          : "text-foreground hover:text-brand-text",
+                        "transition-[opacity,translate] ease-out motion-reduce:transition-none",
+                        shown
+                          ? "translate-x-0 opacity-100"
+                          : "-translate-x-3 opacity-0",
                       ].join(" ")}
+                      style={{
+                        transitionDuration: "400ms",
+                        transitionDelay: shown ? `${300 + i * 60}ms` : "0ms",
+                      }}
                     >
-                      <span className="inline-flex items-center gap-3">
+                      <a
+                        href={`#${id}`}
+                        onClick={closeMenu}
+                        aria-current={isActive ? "location" : undefined}
+                        className={[
+                          "group flex items-center justify-between px-4 py-4 text-base font-medium transition-colors",
+                          isActive
+                            ? "text-brand-text"
+                            : "text-foreground hover:text-brand-text",
+                        ].join(" ")}
+                      >
+                        <span className="inline-flex items-center gap-3">
+                          <span
+                            className={[
+                              "from-brand-500 to-brand-600 h-4 w-0.5 rounded-full bg-gradient-to-b transition-all duration-300",
+                              isActive
+                                ? "w-1"
+                                : "w-0.5 opacity-40 group-hover:w-1 group-hover:opacity-100",
+                            ].join(" ")}
+                          />
+                          {label}
+                        </span>
+
                         <span
+                          aria-hidden="true"
                           className={[
-                            "from-brand-500 to-brand-600 h-4 w-0.5 rounded-full bg-gradient-to-b transition-all duration-300",
-                            isActive
-                              ? "w-1"
-                              : "w-0.5 opacity-40 group-hover:w-1 group-hover:opacity-100",
+                            "bg-brand-500 size-2 rounded-full transition-opacity",
+                            isActive ? "opacity-100" : "opacity-0",
                           ].join(" ")}
                         />
-                        {label}
-                      </span>
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
 
-                      <span
-                        aria-hidden="true"
-                        className={[
-                          "bg-brand-500 size-2 rounded-full transition-opacity",
-                          isActive ? "opacity-100" : "opacity-0",
-                        ].join(" ")}
-                      />
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-
-          {/* Drawer footer */}
-          <div className="border-border absolute inset-x-0 bottom-0 border-t px-5 py-4">
-            <p className="text-muted text-xs font-medium">
-              © {new Date().getFullYear()} Nuvogram
-            </p>
-          </div>
-        </aside>
-      </div>
+            <div className="border-border absolute inset-x-0 bottom-0 border-t px-5 py-4">
+              <p className="text-muted text-xs font-medium">
+                © {new Date().getFullYear()} Nuvogram
+              </p>
+            </div>
+          </aside>
+        </div>
+      )}
     </>
   );
 }
