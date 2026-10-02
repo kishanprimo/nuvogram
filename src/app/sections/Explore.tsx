@@ -12,22 +12,22 @@ const TABS = [
     text: "Share photos and videos, follow friends and keep up with everything in your feed.",
   },
   {
-    label: "products & orders",
+    label: "Products & Orders",
     img: img("product_order"),
     text: "List your products, get orders from users and track every delivery inside the app.",
   },
   {
-    label: "wallet",
+    label: "Wallet",
     img: img("wallet-1"),
     text: "Top up your wallet and pay for orders without leaving Nuvogram.",
   },
   {
-    label: "audio/video call",
+    label: "Audio/Video Call",
     img: img("video_call"),
     text: "Call the people you follow with clear voice or face-to-face video, straight from chat.",
   },
   {
-    label: "Face recognition",
+    label: "Face Recognition",
     img: img("face_id"),
     text: "Lock your account with your face so only you can open the app.",
   },
