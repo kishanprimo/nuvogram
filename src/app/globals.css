@@ -1,26 +1,214 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "./color.css";
 
 @theme inline {
+  /* Surfaces */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-on-brand: var(--on-brand);
+  --color-on-hero: var(--on-hero);
+
+  /* Brand indigo → cyan */
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+  --color-brand-950: var(--brand-950);
+  --color-brand-text: var(--brand-text);
+
+  /* Accent cyan */
+  --color-accent: var(--accent-cyan);
+  --color-accent-soft: var(--accent-cyan-soft);
+
+  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ============================================================
+   Gradient helpers
+   ============================================================ */
+@utility bg-brand-gradient {
+  background-image: var(--gradient-brand);
+}
+
+@utility bg-hero-gradient {
+  background-image: var(--gradient-hero);
+}
+
+/* ============================================================
+   Hero animations
+   ============================================================ */
+@keyframes float-y {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 -10px; }
+}
+@utility animate-float {
+  animation: float-y 7s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 40px 28px; }
+}
+@utility animate-drift {
+  animation: drift 18s ease-in-out infinite;
+}
+
+/* Hero artwork sizing */
+@utility w-hero-art {
+  width: 100%;
+  @media (min-width: 64rem) {
+    width: min(80vw, 1700px);
   }
+}
+
+/* ============================================================
+   Base resets / global
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+
+  /* Force light rendering even if OS is in dark mode */
+  color-scheme: light;
+}
+
+/* If your app uses <html class="dark"> toggling, this forces light too */
+html.dark {
+  color-scheme: light;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* ============================================================
+   Store buttons (extraordinary idle + hover)
+   ============================================================ */
+@keyframes store-ring-spin {
+  to { transform: rotate(360deg); }
+}
+.store-ring {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    var(--accent) 60deg,
+    transparent 120deg,
+    transparent 240deg,
+    var(--accent) 300deg,
+    transparent 360deg
+  );
+  animation: store-ring-spin 6s linear infinite;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  padding: 1px;
+}
+
+@keyframes store-liquid-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.store-liquid {
+  background: linear-gradient(
+    120deg,
+    rgb(0 0 0 / 0.55) 0%,
+    rgb(0 0 0 / 0.35) 30%,
+    color-mix(in srgb, var(--accent) 35%, transparent) 50%,
+    rgb(0 0 0 / 0.35) 70%,
+    rgb(0 0 0 / 0.55) 100%
+  );
+  background-size: 300% 300%;
+  animation: store-liquid-shift 8s ease-in-out infinite;
+  transition: filter 500ms ease, background-size 500ms ease;
+}
+.store-btn:hover .store-liquid {
+  animation-duration: 2s;
+  filter: brightness(1.4) saturate(1.4);
+}
+
+@keyframes store-breathe {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%      { opacity: 0.7;  transform: scale(1.15); }
+}
+.store-breathe {
+  background: radial-gradient(circle, var(--accent), transparent 70%);
+  animation: store-breathe 3.5s ease-in-out infinite;
+}
+.store-btn:hover .store-breathe {
+  animation-duration: 1.2s;
+  opacity: 0.9;
+}
+
+@keyframes store-orbit {
+  to { transform: rotate(360deg); }
+}
+.store-orbit {
+  animation: store-orbit 4s linear infinite;
+  transform-origin: center;
+}
+.store-btn:hover .store-orbit {
+  animation-duration: 1.2s;
+}
+
+/* ============================================================
+   Features section — decorative patterns & animations
+   ============================================================ */
+.features-dots {
+  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-size: 10px 10px;
+}
+
+@keyframes features-orbit-dash {
+  to { stroke-dashoffset: -200; }
+}
+.features-orbit-line {
+  animation: features-orbit-dash 20s linear infinite;
+}
+
+@keyframes features-wave-drift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-6px); }
+}
+.features-wave {
+  animation: features-wave-drift 3s ease-in-out infinite alternate;
+}
+
+/* ============================================================
+   Reduced motion — disable every decorative animation
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .store-ring,
+  .store-liquid,
+  .store-breathe,
+  .store-orbit,
+  .features-orbit-line,
+  .features-wave {
+    animation: none !important;
+  }
 }

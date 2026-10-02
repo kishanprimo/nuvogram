@@ -1,0 +1,69 @@
+/*
+  color.css — single source of truth for every color in the app.
+  Change a hex here and the whole UI follows. Never hard-code hex in components.
+
+  Brand palette sampled from nuvogram.com:
+    sky blue  ≈ #0098d8   (the globe + "NEXT" in the logo)
+    navy      ≈ #0a1f5c   (the "NUVOGRAM" wordmark)
+    royal     ≈ #0a62bd   (mid-gradient blue used on the site)
+
+  NOTE: This file is intentionally LIGHT-ONLY. The dark-mode media query
+  has been removed so the site always renders with a light background and
+  dark text — regardless of the user's OS theme.
+*/
+
+:root {
+  /* Base surfaces — always light */
+  --background: #ffffff;
+  --foreground: #0f172a;      /* slate-900 — dark text on light bg */
+  --surface: #f4f8fb;         /* very light blue-tinted surface */
+  --surface-raised: #ffffff;
+  --border: #e1e9f0;          /* cool-tinted border */
+  --muted: #55627a;           /* slate-blue muted text */
+
+  /* Brand — sky blue → navy (sampled from the logo) */
+  --brand-50: #eaf8fe;
+  --brand-100: #cdeefc;
+  --brand-200: #9bdcf8;
+  --brand-300: #5cc4f0;
+  --brand-400: #1eaee6;
+  --brand-500: #0098d8;       /* logo sky blue */
+  --brand-600: #0079b3;       /* deeper sky (headings / links) */
+  --brand-700: #0a5f8f;
+  --brand-800: #123a7a;
+  --brand-900: #0e2a6b;
+  --brand-950: #0a1f5c;       /* logo navy */
+
+  /* Accent blues (kept for gradients, orbs, liquid) */
+  --accent-cyan: #00b4e6;
+  --accent-cyan-soft: #33c7f0;
+
+  /* Blue used as text/links */
+  --brand-text: var(--brand-600);
+
+  /* Text placed on brand-colored fills */
+  --on-brand: #ffffff;
+
+  /* Hero: sky → royal → navy, sampled from nuvogram.com */
+  --hero-1: #00a8e8;
+  --hero-2: #0586d0;
+  --hero-3: #0a62bd;
+  --hero-4: #0b4aa8;
+  --gradient-hero: linear-gradient(
+    125deg,
+    var(--hero-1) 0%,
+    var(--hero-2) 38%,
+    var(--hero-3) 68%,
+    var(--hero-4) 100%
+  );
+
+  /* Text/shapes on the hero (white in both themes) */
+  --on-hero: #ffffff;
+
+  /* Gradient in the logo's own direction: navy → sky blue */
+  --gradient-brand: linear-gradient(135deg, var(--brand-950), var(--brand-500));
+
+  /* Effects */
+  --shadow-color: 10 31 92;   /* logo navy as r g b */
+  --focus-ring: var(--brand-400);
+}
