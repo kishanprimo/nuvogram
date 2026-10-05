@@ -9,7 +9,8 @@ import {
   FaLinkedinIn,
   FaInstagram,
 } from "react-icons/fa";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { useRouter, usePathname } from "next/navigation";
 
 /* ------------------------------------------------------------------ */
 /* Content                                                            */
@@ -64,8 +65,29 @@ function useInView<T extends HTMLElement>(threshold = 0.15) {
 /* Component                                                          */
 /* ------------------------------------------------------------------ */
 export default function Footer() {
+  const router = useRouter();
+  const pathname = usePathname();
   const { ref, inView } = useInView<HTMLElement>(0.1);
   const year = new Date().getFullYear();
+
+  const handleNavigation = useCallback((href: string) => {
+    if (href.startsWith("#")) {
+      const id = href.slice(1);
+      if (pathname === "/") {
+        // Already on home page, just scroll
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      } else {
+        // Navigate to home page with hash
+        router.push(`/${href}`);
+      }
+    } else {
+      // Regular navigation
+      router.push(href);
+    }
+  }, [pathname, router]);
 
   return (
     <footer
@@ -184,6 +206,10 @@ export default function Footer() {
                 <li key={label}>
                   <a
                     href={href}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavigation(href);
+                    }}
                     className="group inline-flex items-center gap-2 text-slate-200 transition-colors hover:text-[#00a2e8]"
                   >
                     <span className="h-px w-0 bg-gradient-to-r from-[#00a2e8] to-cyan-300 transition-all duration-300 group-hover:w-3.5" />
@@ -204,6 +230,10 @@ export default function Footer() {
                 <li key={label}>
                   <a
                     href={href}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavigation(href);
+                    }}
                     className="group inline-flex items-center gap-2 text-slate-200 transition-colors hover:text-[#00a2e8]"
                   >
                     <span className="h-px w-0 bg-gradient-to-r from-[#00a2e8] to-cyan-300 transition-all duration-300 group-hover:w-3.5" />
@@ -225,6 +255,10 @@ export default function Footer() {
           {/* Logo */}
           <a
             href="#home"
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavigation("#home");
+            }}
             className="inline-flex shrink-0 items-center justify-center p-1 transition-transform hover:scale-105"
           >
             <Image
