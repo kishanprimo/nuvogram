@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, Suspense } from "react";
+import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import BottomToTop from "./BottomToTop";
@@ -10,9 +10,8 @@ interface PageLayoutProps {
   children: React.ReactNode;
 }
 
-export default function PageLayout({ children }: PageLayoutProps) {
+function PageLayoutContent({ children }: PageLayoutProps) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     // Handle hash scroll when navigating to home page with a hash
@@ -28,7 +27,7 @@ export default function PageLayout({ children }: PageLayoutProps) {
         }
       }
     }
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   return (
     <>
@@ -37,5 +36,13 @@ export default function PageLayout({ children }: PageLayoutProps) {
       <Footer />
       <BottomToTop />
     </>
+  );
+}
+
+export default function PageLayout({ children }: PageLayoutProps) {
+  return (
+    <Suspense fallback={null}>
+      <PageLayoutContent>{children}</PageLayoutContent>
+    </Suspense>
   );
 }
