@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import Image from "next/image";
 import ButtonAnimation from "../common/ButtonAnimation";
 
 type Feature = {
@@ -11,6 +12,8 @@ type Feature = {
   tags: string[];
   imageSrc: string;
   imageAlt: string;
+  width: number;
+  height: number;
 };
 
 const FEATURES: Feature[] = [
@@ -22,6 +25,8 @@ const FEATURES: Feature[] = [
       'The "post feed" on Nuvogram refers to the main grid of photos and videos that appear on a user\'s profile. When you upload a photo or video to Instagram and share it with your followers, it becomes part of your post feed. Each post typically includes an image or video, a caption, and may also include hashtags, tags of other users, and a location.',
     tags: ["Photo & Video Grid", "Captions & Hashtags", "User Tagging", "Location Pins"],
     imageSrc: "/images/post_feeds.png",
+    width: 1107,
+    height: 1552,
     imageAlt: "Nuvogram Home screen showing the post feed",
   },
   {
@@ -32,6 +37,8 @@ const FEATURES: Feature[] = [
       "This is the traditional type of content that appears on your Nuvogram profile grid. Profile posts can include photos or videos (up to 60 seconds long), along with captions, hashtags, tags of other users, and location tags, same is for reels the short video is termed as reels, and in thread you can post image with text and single text post.",
     tags: ["Photos & Videos", "Reels", "Threads", "Location Tags"],
     imageSrc: "/images/profile.png",
+    width: 1107,
+    height: 1552,
     imageAlt: "Nuvogram Profile screen",
   },
   {
@@ -42,6 +49,8 @@ const FEATURES: Feature[] = [
       "Messaging on Nuvogram is a way to have private conversations with other users, separate from your public profile and posts. It's a key feature for staying connected with friends, family, colleagues, and other users on the platform.",
     tags: ["Private Chats", "Unread Badges", "Voice Notes", "Emoji & Attachments"],
     imageSrc: "/images/Message.png",
+    width: 2057,
+    height: 2309,
     imageAlt: "Nuvogram Chat and messages screens",
   },
   {
@@ -52,6 +61,8 @@ const FEATURES: Feature[] = [
       "Following someone on Nuvogram is a fundamental aspect of engagement and interaction on the platform. It allows users to curate their feed by choosing to see content from accounts they are interested in, whether they are friends, influencers, brands, or organizations.",
     tags: ["Followers", "Following", "Quick Follow", "Search People"],
     imageSrc: "/images/Follow_following.png",
+    width: 1371,
+    height: 1539,
     imageAlt: "Nuvogram Followers and Following screens",
   },
 ];
@@ -320,11 +331,13 @@ function FeatureCarousel({
                       filter: isActive ? "blur(0px)" : "blur(10px)",
                     }}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={f.imageSrc}
                       alt={f.imageAlt}
-                      loading={i === 0 ? "lazy" : "eager"}
+                      width={f.width}
+                      height={f.height}
+                      sizes="(min-width: 1536px) 42rem, (min-width: 1280px) 34rem, (min-width: 1024px) 28rem, (min-width: 768px) 26rem, (min-width: 640px) 22rem, 17rem"
+                      loading={i === 0 ? "eager" : "lazy"}
                       draggable={false}
                       className="mx-auto block h-auto w-full max-w-68 select-none drop-shadow-2xl sm:max-w-[22rem] md:max-w-[26rem] lg:max-w-[28rem] xl:max-w-136 2xl:max-w-[42rem]"
                     />
@@ -619,11 +632,12 @@ function FeatureRow({
                 : "perspective(1200px) rotateY(-14deg) rotateX(6deg)",
             }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={feature.imageSrc}
               alt={feature.imageAlt}
-              loading="lazy"
+              width={feature.width}
+              height={feature.height}
+              sizes="(min-width: 1536px) 42rem, (min-width: 1280px) 34rem, (min-width: 1024px) 28rem, (min-width: 768px) 26rem, (min-width: 640px) 22rem, 17rem"
               draggable={false}
               className="mx-auto block h-auto w-full max-w-68 select-none drop-shadow-2xl sm:max-w-[22rem] md:max-w-[26rem] lg:max-w-[28rem] xl:max-w-136 2xl:max-w-[42rem]"
             />

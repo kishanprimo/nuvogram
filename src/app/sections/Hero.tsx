@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import Image from "next/image";
 import { FaGooglePlay, FaApple } from "react-icons/fa";
 import ButtonAnimation from "../common/ButtonAnimation";
 
@@ -50,23 +51,12 @@ export default function Hero({
 }: HeroProps) {
   const [ready, setReady] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
 
   /* Start the entrance sequence right after first paint */
   useEffect(() => {
     const t = setTimeout(() => setReady(true), 80);
     return () => clearTimeout(t);
   }, []);
-
-  /* Tell CSS the artwork's real aspect ratio so it can be sized to fit the screen */
-  const syncRatio = () => {
-    const img = imgRef.current;
-    const el = sectionRef.current;
-    if (img && el && img.naturalWidth && img.naturalHeight) {
-      el.style.setProperty("--img-ratio", String(img.naturalWidth / img.naturalHeight));
-    }
-  };
-  useEffect(syncRatio, []);
 
   /* Pointer + scroll parallax, written to CSS variables (no re-renders) */
   useEffect(() => {
@@ -214,14 +204,14 @@ export default function Hero({
             }`}
             style={{ transitionDelay: ready ? "350ms" : "0ms" }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              ref={imgRef}
+            <Image
               src={imageSrc}
               alt="Nuvogram app screens showing the feed, stories and chat"
-              fetchPriority="high"
+              width={5760}
+              height={5110}
+              sizes="(min-width: 1536px) 95vw, (min-width: 1024px) 75vw, 1px"
+              priority
               draggable={false}
-              onLoad={syncRatio}
               className="block h-auto w-full select-none"
               style={{
                 WebkitMaskImage: EDGE_FADE,

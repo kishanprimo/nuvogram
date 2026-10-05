@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import Image from "next/image";
 
 /* Images live in /public/images. If a file isn't .png, change it here only. */
 const img = (name: string) => `/images/${name}.png`;
@@ -9,26 +10,36 @@ const TABS = [
   {
     label: "Social Post",
     img: img("Social-post"),
+    width: 686,
+    height: 548,
     text: "Share photos and videos, follow friends and keep up with everything in your feed.",
   },
   {
     label: "Products & Orders",
     img: img("product_order"),
+    width: 686,
+    height: 548,
     text: "List your products, get orders from users and track every delivery inside the app.",
   },
   {
     label: "Wallet",
     img: img("wallet-1"),
+    width: 686,
+    height: 548,
     text: "Top up your wallet and pay for orders without leaving Nuvogram.",
   },
   {
     label: "Audio/Video Call",
     img: img("video_call"),
+    width: 708,
+    height: 408,
     text: "Call the people you follow with clear voice or face-to-face video, straight from chat.",
   },
   {
     label: "Face Recognition",
     img: img("face_id"),
+    width: 718,
+    height: 409,
     text: "Lock your account with your face so only you can open the app.",
   },
 ];
@@ -245,10 +256,12 @@ export default function Explore() {
                   transition: `transform 800ms ${EASE}, opacity 600ms`,
                 }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                 <img
+                <Image
                   src={t.img}
                   alt={t.label}
+                  width={t.width}
+                  height={t.height}
+                  sizes="(min-width: 1024px) 40rem, 90vw"
                   draggable={false}
                   loading="lazy"
                   className="h-full w-full object-contain select-none"

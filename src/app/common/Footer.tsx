@@ -230,10 +230,10 @@ export default function Footer() {
             <Image
               src="/images/Logo.png"
               alt="Nuvogram"
-              width={180}
-              height={180}
+              width={1798}
+              height={937}
+              sizes="12rem"
               className="h-16 w-auto object-contain sm:h-20 lg:h-24"
-              priority
             />
           </a>
 

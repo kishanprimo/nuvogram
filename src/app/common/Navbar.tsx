@@ -29,7 +29,6 @@ const CLOSE_BLUE_DELAY = 120;
 export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
   const [ready, setReady] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [progress, setProgress] = useState(0);
 
   /** Panel mount state. false = not in DOM. */
   const [mounted, setMounted] = useState(false);
@@ -44,6 +43,7 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
   const [pill, setPill] = useState({ x: 0, w: 0, show: false });
 
   const listRef = useRef<HTMLUListElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Partial<Record<LinkId, HTMLAnchorElement | null>>>({});
   const timers = useRef<number[]>([]);
 
@@ -63,7 +63,11 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
     const onScroll = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       setScrolled(window.scrollY > 8);
-      setProgress(max > 0 ? Math.min(window.scrollY / max, 1) : 0);
+      // Written straight to the DOM so scrolling doesn't re-render the navbar
+      if (progressRef.current) {
+        const p = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
+        progressRef.current.style.transform = `scaleX(${p})`;
+      }
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -281,8 +285,9 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
 
         <div
           aria-hidden="true"
+          ref={progressRef}
           className="bg-brand-gradient absolute bottom-[-1px] left-0 h-[2px] w-full origin-left"
-          style={{ transform: `scaleX(${progress})`, opacity: scrolled ? 1 : 0 }}
+          style={{ transform: "scaleX(0)", opacity: scrolled ? 1 : 0 }}
         />
       </header>
 

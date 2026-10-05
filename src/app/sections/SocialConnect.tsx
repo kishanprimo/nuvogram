@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { FaGooglePlay, FaApple } from "react-icons/fa";
 import ButtonAnimation from "../common/ButtonAnimation";
 
@@ -74,10 +75,12 @@ export default function SocialConnect() {
             {/* ---- Right: White Floating Card with Illustration ---- */}
             <div className="relative flex justify-center lg:justify-end">
               <div className="relative w-full max-w-md rounded-3xl bg-white p-4 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.3)] transition-transform duration-500 hover:scale-[1.02] sm:p-6 lg:absolute lg:top-1/2 lg:-right-4 lg:w-[115%] lg:max-w-xl lg:-translate-y-1/2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={IMAGE_SRC}
                   alt="People connecting through the Nuvogram app"
+                  width={640}
+                  height={657}
+                  sizes="(min-width: 1024px) 36rem, 28rem"
                   draggable={false}
                   className="h-auto w-full select-none object-contain"
                 />
