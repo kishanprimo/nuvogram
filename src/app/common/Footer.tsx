@@ -167,17 +167,17 @@ export default function Footer() {
         }
       >
         {/* Three-column links adjusted for max-w-[1400px] with enlarged visible typography */}
-        <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3 md:justify-items-center">
+        <div className="mx-auto grid w-full max-w-6xl gap-10 sm:grid-cols-2 md:grid-cols-3">
           {/* ----- Contact Info ----- */}
-          <div className="w-full max-w-sm">
+          <div className="w-full text-center md:w-fit md:justify-self-start md:text-left">
             <h3 className="mb-5 text-base font-extrabold tracking-wider uppercase text-[#00a2e8] drop-shadow-[0_0_12px_rgba(0,162,232,0.4)]">
               Contact Info
             </h3>
 
             <div className="space-y-4 text-sm font-medium sm:text-base">
-              <div className="flex items-start gap-3">
+              <div className="flex items-start justify-center gap-3 md:justify-start">
                 <FaMapMarkerAlt className="mt-1 size-4 shrink-0 text-[#00a2e8]" />
-                <p className="leading-relaxed text-slate-200">
+                <p className="text-left leading-relaxed text-slate-200">
                   Warrior Comics Inc
                   <br />
                   PO Box 230610
@@ -188,7 +188,7 @@ export default function Footer() {
 
               <a
                 href="mailto:Support@ziogram.com"
-                className="group flex items-center gap-3 text-slate-200 transition-colors hover:text-[#00a2e8]"
+                className="group flex items-center justify-center gap-3 text-slate-200 transition-colors hover:text-[#00a2e8] md:justify-start"
               >
                 <FaEnvelope className="size-4 shrink-0 text-[#00a2e8]" />
                 <span className="group-hover:underline">Support@ziogram.com</span>
@@ -197,7 +197,7 @@ export default function Footer() {
           </div>
 
           {/* ----- Features ----- */}
-          <div className="w-full max-w-sm">
+          <div className="w-full text-center md:w-fit md:justify-self-center md:text-left">
             <h3 className="mb-5 text-base font-extrabold tracking-wider uppercase text-[#00a2e8] drop-shadow-[0_0_12px_rgba(0,162,232,0.4)]">
               Features
             </h3>
@@ -221,7 +221,7 @@ export default function Footer() {
           </div>
 
           {/* ----- Support ----- */}
-          <div className="w-full max-w-sm">
+          <div className="w-full text-center md:w-fit md:justify-self-end md:text-left">
             <h3 className="mb-5 text-base font-extrabold tracking-wider uppercase text-[#00a2e8] drop-shadow-[0_0_12px_rgba(0,162,232,0.4)]">
               Support
             </h3>
@@ -247,7 +247,7 @@ export default function Footer() {
 
         {/* ---------- Glowing Divider ---------- */}
         <div className="relative mt-14 h-px w-full">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-sky-400/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-sky-400/10 via-sky-400/40 to-sky-400/10" />
         </div>
 
         {/* ---------- Bottom Bar ---------- */}

@@ -155,13 +155,14 @@ export default function Contact({
           @media (prefers-reduced-motion: reduce) { .ct-anim { animation: none !important; } }
         `}</style>
 
+        {/* More visible dots */}
         <div
-          className="ct-anim absolute inset-0 text-brand-500/25"
+          className="ct-anim absolute inset-0 text-brand-500/40"
           style={{
-            backgroundImage: "radial-gradient(currentColor 1px, transparent 1px)",
+            backgroundImage: "radial-gradient(currentColor 1.5px, transparent 1.5px)",
             backgroundSize: "24px 24px",
-            WebkitMaskImage: "radial-gradient(ellipse at center, black, transparent 72%)",
-            maskImage: "radial-gradient(ellipse at center, black, transparent 72%)",
+            WebkitMaskImage: "radial-gradient(ellipse at center, black, transparent 80%)",
+            maskImage: "radial-gradient(ellipse at center, black, transparent 80%)",
             animation: "ct-pan 30s linear infinite",
           }}
         />
@@ -486,7 +487,6 @@ export default function Contact({
 /* ------------------------------------------------------------------ */
 /* Small reusable field                                                */
 /* ------------------------------------------------------------------ */
-/* With this fixed version: */
 function Field({
   id,
   label,
