@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useRouter, usePathname } from "next/navigation";
 
 const LINKS = [
   { id: "features", label: "Features" },
@@ -27,6 +28,8 @@ const CLOSE_WHITE_DELAY = 0;
 const CLOSE_BLUE_DELAY = 120;
 
 export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [ready, setReady] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -52,6 +55,19 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
     timers.current = [];
   };
 
+  const handleNavigation = useCallback((id: string) => {
+    if (pathname === "/") {
+      // Already on home page, just scroll
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      // Navigate to home page with hash
+      router.push(`/#${id}`);
+    }
+  }, [pathname, router]);
+
   /* One-time entrance */
   useEffect(() => {
     const id = requestAnimationFrame(() => setReady(true));
@@ -76,6 +92,7 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
 
   /* Scroll-spy */
   useEffect(() => {
+    setActive(null);
     const sections = LINKS.map((l) => document.getElementById(l.id)).filter(
       (el): el is HTMLElement => el !== null,
     );
@@ -88,7 +105,7 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
     );
     sections.forEach((s) => observer.observe(s));
     return () => observer.disconnect();
-  }, []);
+  }, [pathname]);
 
   /* Sliding pill */
   const target = hovered ?? active;
@@ -163,7 +180,7 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
   useEffect(() => () => clearTimers(), []);
 
   const compact = scrolled || mounted;
-  const onDark = !compact;
+  const onDark = pathname === "/" && !compact;
 
   return (
     <>
@@ -183,7 +200,16 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
             compact ? "h-[4.25rem]" : "h-24",
           ].join(" ")}
         >
-          <a href="#" aria-label="Nuvogram home" className="shrink-0 rounded-md">
+          <a
+            href="/"
+            onClick={(e) => {
+              e.preventDefault();
+              if (pathname === "/") window.scrollTo({ top: 0, behavior: "smooth" });
+else router.push("/");
+            }}
+            aria-label="Nuvogram home"
+            className="shrink-0 rounded-md"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={logoSrc}
@@ -227,6 +253,10 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
                       itemRefs.current[id] = el;
                     }}
                     href={`#${id}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavigation(id);
+                    }}
                     aria-current={isActive ? "location" : undefined}
                     onMouseEnter={() => setHovered(id)}
                     onFocus={() => setHovered(id)}
@@ -343,8 +373,12 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
           >
             <div className="border-border flex h-[4.25rem] items-center justify-between border-b px-5">
               <a
-                href="#"
-                onClick={closeMenu}
+                href="/"
+                onClick={(e) => {
+                  e.preventDefault();
+                  closeMenu();
+                  router.push("/");
+                }}
                 aria-label="Nuvogram home"
                 className="shrink-0 rounded-md"
               >
@@ -393,7 +427,11 @@ export default function Navbar({ logoSrc = "/images/Logo.png" }: NavbarProps) {
                     >
                       <a
                         href={`#${id}`}
-                        onClick={closeMenu}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          closeMenu();
+                          handleNavigation(id);
+                        }}
                         aria-current={isActive ? "location" : undefined}
                         className={[
                           "group flex items-center justify-between px-4 py-4 text-base font-medium transition-colors",
