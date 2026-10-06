@@ -74,17 +74,14 @@ export default function Footer() {
     if (href.startsWith("#")) {
       const id = href.slice(1);
       if (pathname === "/") {
-        // Already on home page, just scroll
         const element = document.getElementById(id);
         if (element) {
           element.scrollIntoView({ behavior: "smooth" });
         }
       } else {
-        // Navigate to home page with hash
         router.push(`/${href}`);
       }
     } else {
-      // Regular navigation
       router.push(href);
     }
   }, [pathname, router]);
@@ -98,7 +95,7 @@ export default function Footer() {
           "linear-gradient(180deg, rgb(6 15 34) 0%, rgb(4 11 26) 45%, rgb(2 7 18) 100%)",
       }}
     >
-      {/* ---------- Animated backdrop (Dotted pattern only, center SVG rings removed) ---------- */}
+      {/* ---------- Animated backdrop ---------- */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
         <style>{`
           @keyframes ft-pan { to { background-position: 24px 24px; } }
@@ -116,7 +113,7 @@ export default function Footer() {
           }
         `}</style>
 
-        {/* Dotted Grid Pattern */}
+        {/* Dotted Grid */}
         <div
           className="ft-anim absolute inset-0 text-sky-400/25"
           style={{
@@ -140,7 +137,7 @@ export default function Footer() {
           style={{ animation: "ft-drift 22s ease-in-out infinite", animationDelay: "-6s" }}
         />
 
-        {/* Top Glowing Border Animation */}
+        {/* Top Glowing Border */}
         <span className="absolute inset-x-0 top-0 h-px overflow-hidden">
           <span
             className="ft-anim from-sky-400 via-sky-300 to-sky-400 absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r"
@@ -166,16 +163,16 @@ export default function Footer() {
             : { opacity: 0 }
         }
       >
-        {/* Three-column links adjusted for max-w-[1400px] with enlarged visible typography */}
-        <div className="mx-auto grid w-full max-w-6xl gap-10 sm:grid-cols-2 md:grid-cols-3">
+        {/* Four-column grid */}
+        <div className="mx-auto grid w-full max-w-6xl gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {/* ----- Contact Info ----- */}
-          <div className="w-full text-center md:w-fit md:justify-self-start md:text-left">
+          <div className="w-full text-center sm:text-left">
             <h3 className="mb-5 text-base font-extrabold tracking-wider uppercase text-[#00a2e8] drop-shadow-[0_0_12px_rgba(0,162,232,0.4)]">
               Contact Info
             </h3>
 
             <div className="space-y-4 text-sm font-medium sm:text-base">
-              <div className="flex items-start justify-center gap-3 md:justify-start">
+              <div className="flex items-start justify-center gap-3 sm:justify-start">
                 <FaMapMarkerAlt className="mt-1 size-4 shrink-0 text-[#00a2e8]" />
                 <p className="text-left leading-relaxed text-slate-200">
                   Warrior Comics Inc
@@ -188,7 +185,7 @@ export default function Footer() {
 
               <a
                 href="mailto:Support@ziogram.com"
-                className="group flex items-center justify-center gap-3 text-slate-200 transition-colors hover:text-[#00a2e8] md:justify-start"
+                className="group flex items-center justify-center gap-3 text-slate-200 transition-colors hover:text-[#00a2e8] sm:justify-start"
               >
                 <FaEnvelope className="size-4 shrink-0 text-[#00a2e8]" />
                 <span className="group-hover:underline">Support@ziogram.com</span>
@@ -197,7 +194,7 @@ export default function Footer() {
           </div>
 
           {/* ----- Features ----- */}
-          <div className="w-full text-center md:w-fit md:justify-self-center md:text-left">
+          <div className="w-full text-center sm:text-left">
             <h3 className="mb-5 text-base font-extrabold tracking-wider uppercase text-[#00a2e8] drop-shadow-[0_0_12px_rgba(0,162,232,0.4)]">
               Features
             </h3>
@@ -210,9 +207,9 @@ export default function Footer() {
                       e.preventDefault();
                       handleNavigation(href);
                     }}
-                    className="group inline-flex items-center gap-2 text-slate-200 transition-colors hover:text-[#00a2e8]"
+                    className="group relative inline-flex items-center text-slate-200 transition-colors hover:text-[#00a2e8]"
                   >
-                    <span className="h-px w-0 bg-gradient-to-r from-[#00a2e8] to-cyan-300 transition-all duration-300 group-hover:w-3.5" />
+                    <span className="pointer-events-none absolute left-0 -bottom-0.5 h-px w-0 bg-gradient-to-r from-[#00a2e8] to-cyan-300 transition-all duration-300 group-hover:w-full" />
                     {label}
                   </a>
                 </li>
@@ -221,7 +218,7 @@ export default function Footer() {
           </div>
 
           {/* ----- Support ----- */}
-          <div className="w-full text-center md:w-fit md:justify-self-end md:text-left">
+          <div className="w-full text-center sm:text-left">
             <h3 className="mb-5 text-base font-extrabold tracking-wider uppercase text-[#00a2e8] drop-shadow-[0_0_12px_rgba(0,162,232,0.4)]">
               Support
             </h3>
@@ -234,10 +231,33 @@ export default function Footer() {
                       e.preventDefault();
                       handleNavigation(href);
                     }}
-                    className="group inline-flex items-center gap-2 text-slate-200 transition-colors hover:text-[#00a2e8]"
+                    className="group relative inline-flex items-center text-slate-200 transition-colors hover:text-[#00a2e8]"
                   >
-                    <span className="h-px w-0 bg-gradient-to-r from-[#00a2e8] to-cyan-300 transition-all duration-300 group-hover:w-3.5" />
+                    <span className="pointer-events-none absolute left-0 -bottom-0.5 h-px w-0 bg-gradient-to-r from-[#00a2e8] to-cyan-300 transition-all duration-300 group-hover:w-full" />
                     {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* ----- Follow Us (socials moved here) ----- */}
+          <div className="w-full text-center sm:text-left">
+            <h3 className="mb-5 text-base font-extrabold tracking-wider uppercase text-[#00a2e8] drop-shadow-[0_0_12px_rgba(0,162,232,0.4)]">
+              Follow Us
+            </h3>
+            <ul className="flex items-center justify-center gap-3 sm:justify-start">
+              {SOCIALS.map(({ Icon, href, label }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="group relative grid size-10 place-items-center overflow-hidden rounded-full border border-sky-400/30 bg-white/5 text-[#00a2e8] backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#00a2e8] hover:bg-[#00a2e8] hover:text-white"
+                  >
+                    <span className="pointer-events-none absolute inset-y-0 -left-full w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-[400%]" />
+                    <Icon className="relative size-4 transition-transform duration-300 group-hover:scale-110" />
                   </a>
                 </li>
               ))}
@@ -245,13 +265,13 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* ---------- Glowing Divider ---------- */}
-        <div className="relative mt-14 h-px w-full">
+        {/* ---------- Glowing Divider (slimmer) ---------- */}
+        <div className="relative mt-10 h-px w-full">
           <div className="absolute inset-0 bg-gradient-to-r from-sky-400/10 via-sky-400/40 to-sky-400/10" />
         </div>
 
-        {/* ---------- Bottom Bar ---------- */}
-        <div className="mt-10 flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
+        {/* ---------- Bottom Bar (logo left · copyright right) ---------- */}
+        <div className="mt-6 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
           {/* Logo */}
           <a
             href="#home"
@@ -267,32 +287,14 @@ export default function Footer() {
               width={1798}
               height={937}
               sizes="12rem"
-              className="h-16 w-auto object-contain sm:h-20 lg:h-24"
+              className="h-14 w-auto object-contain sm:h-16 lg:h-20"
             />
           </a>
 
-          {/* Copyright */}
-          <p className="text-center text-xs font-semibold text-slate-400 sm:text-sm">
+          {/* Copyright — pushed to the right */}
+          <p className="text-center text-xs font-semibold text-slate-400 sm:text-sm sm:text-right">
             © Copyright {year} by Plus Warrior Comics Inc
           </p>
-
-          {/* Socials */}
-          <ul className="flex items-center gap-3">
-            {SOCIALS.map(({ Icon, href, label }) => (
-              <li key={label}>
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="group relative grid size-10 place-items-center overflow-hidden rounded-full border border-sky-400/30 bg-white/5 text-[#00a2e8] backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#00a2e8] hover:bg-[#00a2e8] hover:text-white"
-                >
-                  <span className="pointer-events-none absolute inset-y-0 -left-full w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-[400%]" />
-                  <Icon className="relative size-4 transition-transform duration-300 group-hover:scale-110" />
-                </a>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </footer>
